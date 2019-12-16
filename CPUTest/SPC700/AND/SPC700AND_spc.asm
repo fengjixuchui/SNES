@@ -1,6 +1,6 @@
-// SNES SPC700 CPU Test SBC (Subtract With Borrow) demo (SPC Code) by krom (Peter Lemon):
+// SNES SPC700 CPU Test AND (AND With Memory) demo (SPC Code) by krom (Peter Lemon):
 arch snes.smp
-output "SPC700SBC.spc", create
+output "SPC700AND.spc", create
 
 macro seek(variable offset) { // Set SPC700 Memory Map
   origin (offset - SPCRAM)
@@ -58,10 +58,11 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  lda #$7F // A = $7F
-  sbc #$7E // A -= $7E
+  lda #$FF // A = $FF
+  and #$00 // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -78,7 +79,7 @@ SongStart:
   Fail1Loop:
     bra Fail1Loop
   Pass1:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail1
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$01 // Store Handshake Between CPU<->APU
@@ -87,11 +88,11 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  lda #$7F // A = $7F
-  sbc #$80 // A -= $80
+  lda #$FF // A = $FF
+  and #$FF // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -108,7 +109,7 @@ SongStart:
   Fail2Loop:
     bra Fail2Loop
   Pass2:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail2
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$02 // Store Handshake Between CPU<->APU
@@ -119,11 +120,12 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
-  lda #$7F // A = $7F
-  sbc.w $00E1 // A -= $7E
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
+  and.w $00E1 // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -139,7 +141,7 @@ SongStart:
   Fail3Loop:
     bra Fail3Loop
   Pass3:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail3
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$03 // Store Handshake Between CPU<->APU
@@ -148,12 +150,12 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
-  lda #$7F // A = $7F
-  sbc.w $00E1 // A -= $80
+  str $E1=#$FF // Store DP Data
+  lda #$FF // A = $FF
+  and.w $00E1 // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -169,7 +171,7 @@ SongStart:
   Fail4Loop:
     bra Fail4Loop
   Pass4:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail4
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$04 // Store Handshake Between CPU<->APU
@@ -180,11 +182,12 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
-  lda #$7F // A = $7F
-  sbc.b $E1 // A -= $7E
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
+  and.b $E1 // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -200,7 +203,7 @@ SongStart:
   Fail5Loop:
     bra Fail5Loop
   Pass5:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail5
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$05 // Store Handshake Between CPU<->APU
@@ -209,12 +212,12 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
-  lda #$7F // A = $7F
-  sbc.b $E1 // A -= $80
+  str $E1=#$FF // Store DP Data
+  lda #$FF // A = $FF
+  and.b $E1 // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -230,7 +233,7 @@ SongStart:
   Fail6Loop:
     bra Fail6Loop
   Pass6:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail6
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$06 // Store Handshake Between CPU<->APU
@@ -241,12 +244,13 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc.w $00E1,x // A -= $7E
+  and.w $00E1,x // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -262,7 +266,7 @@ SongStart:
   Fail7Loop:
     bra Fail7Loop
   Pass7:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail7
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$07 // Store Handshake Between CPU<->APU
@@ -271,13 +275,13 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$FF // Store DP Data
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc.w $00E1,x // A -= $80
+  and.w $00E1,x // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -293,7 +297,7 @@ SongStart:
   Fail8Loop:
     bra Fail8Loop
   Pass8:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail8
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$08 // Store Handshake Between CPU<->APU
@@ -304,12 +308,13 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
   ldy #$00 // Y = 0
-  sbc $00E1,y // A -= $7E
+  and $00E1,y // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -325,7 +330,7 @@ SongStart:
   Fail9Loop:
     bra Fail9Loop
   Pass9:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail9
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$09 // Store Handshake Between CPU<->APU
@@ -334,13 +339,13 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$FF // Store DP Data
+  lda #$FF // A = $FF
   ldy #$00 // Y = 0
-  sbc $00E1,y // A -= $80
+  and $00E1,y // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -356,7 +361,7 @@ SongStart:
   Fail10Loop:
     bra Fail10Loop
   Pass10:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail10
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0A // Store Handshake Between CPU<->APU
@@ -367,12 +372,13 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc.b $E1,x // A -= $7E
+  and.b $E1,x // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -388,7 +394,7 @@ SongStart:
   Fail11Loop:
     bra Fail11Loop
   Pass11:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail11
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0B // Store Handshake Between CPU<->APU
@@ -397,13 +403,13 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
-  lda #$7F // A = $7F
+  str $E1=#$FF // Store DP Data
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc.b $E1,x // A -= $80
+  and.b $E1,x // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -419,7 +425,7 @@ SongStart:
   Fail12Loop:
     bra Fail12Loop
   Pass12:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail12
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0C // Store Handshake Between CPU<->APU
@@ -430,14 +436,15 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
+  str $E1=#$00 // Store DP Data
   str $E2=#$E1 // Store Indirect Data
   str $E3=#$00 // Store Indirect Data
-  lda #$7F // A = $7F
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc ($E2,x) // A -= $7E
+  and ($E2,x) // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -453,7 +460,7 @@ SongStart:
   Fail13Loop:
     bra Fail13Loop
   Pass13:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail13
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0D // Store Handshake Between CPU<->APU
@@ -462,15 +469,15 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
+  str $E1=#$FF // Store DP Data
   str $E2=#$E1 // Store Indirect Data
   str $E3=#$00 // Store Indirect Data
-  lda #$7F // A = $7F
+  lda #$FF // A = $FF
   ldx #$00 // X = 0
-  sbc ($E2,x) // A -= $80
+  and ($E2,x) // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -486,7 +493,7 @@ SongStart:
   Fail14Loop:
     bra Fail14Loop
   Pass14:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail14
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0E // Store Handshake Between CPU<->APU
@@ -497,14 +504,15 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store DP Data
+  str $E1=#$00 // Store DP Data
   str $E2=#$E1 // Store Indirect Data
   str $E3=#$00 // Store Indirect Data
-  lda #$7F // A = $7F
+  lda #$FF // A = $FF
   ldy #$00 // Y = 0
-  sbc ($E2),y // A -= $7E
+  and ($E2),y // A += $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -520,7 +528,7 @@ SongStart:
   Fail15Loop:
     bra Fail15Loop
   Pass15:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail15
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$0F // Store Handshake Between CPU<->APU
@@ -529,15 +537,15 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store DP Data
+  str $E1=#$FF // Store DP Data
   str $E2=#$E1 // Store Indirect Data
   str $E3=#$00 // Store Indirect Data
-  lda #$7F // A = $7F
+  lda #$FF // A = $FF
   ldy #$00 // Y = 0
-  sbc ($E2),y // A -= $80
+  and ($E2),y // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -553,7 +561,7 @@ SongStart:
   Fail16Loop:
     bra Fail16Loop
   Pass16:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail16
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$10 // Store Handshake Between CPU<->APU
@@ -564,12 +572,13 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7E // Store Indirect Data
-  lda #$7F // A = $7F
+  str $E1=#$00 // Store Indirect Data
+  lda #$FF // A = $FF
   ldx #$E1 // X = Indirect Data
-  sbc (x) // A -= $7E
+  and (x) // A &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -585,7 +594,7 @@ SongStart:
   Fail17Loop:
     bra Fail17Loop
   Pass17:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail17
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$11 // Store Handshake Between CPU<->APU
@@ -594,13 +603,13 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$80 // Store Indirect Data
-  lda #$7F // A = $7F
+  str $E1=#$FF // Store Indirect Data
+  lda #$FF // A = $FF
   ldx #$E1 // X = Indirect Data
-  sbc (x) // A -= $80
+  and (x) // A &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -616,7 +625,7 @@ SongStart:
   Fail18Loop:
     bra Fail18Loop
   Pass18:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail18
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$12 // Store Handshake Between CPU<->APU
@@ -627,13 +636,14 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7F // Store Indirect Data
-  str $E2=#$7E // Store Indirect Data
+  str $E1=#$00 // Store Indirect Data
+  str $E2=#$FF // Store Indirect Data
   ldx #$E1 // X = Indirect Data
   ldy #$E2 // Y = Indirect Data
-  sbc (x)=(y) // (X) -= (Y)
+  and (x)=(y) // (X) &= (Y)
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -650,7 +660,7 @@ SongStart:
   Fail19Loop:
     bra Fail19Loop
   Pass19:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail19
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$13 // Store Handshake Between CPU<->APU
@@ -659,14 +669,14 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$7F // Store Indirect Data
-  str $E2=#$80 // Store Indirect Data
+  str $E1=#$FF // Store Indirect Data
+  str $E2=#$FF // Store Indirect Data
   ldx #$E1 // X = Indirect Data
   ldy #$E2 // Y = Indirect Data
-  sbc (x)=(y) // (X) -= (Y)
+  and (x)=(y) // (X) &= (Y)
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -683,7 +693,7 @@ SongStart:
   Fail20Loop:
     bra Fail20Loop
   Pass20:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail20
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$14 // Store Handshake Between CPU<->APU
@@ -694,10 +704,11 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7F // Store DP Data
-  sbc $E1=#$7E // DP -= $7E
+  str $E1=#$00 // Store DP Data
+  and $E1=#$FF // DP &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -714,7 +725,7 @@ SongStart:
   Fail21Loop:
     bra Fail21Loop
   Pass21:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail21
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$15 // Store Handshake Between CPU<->APU
@@ -723,11 +734,11 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$7F // Store DP Data
-  sbc $E1=#$80 // DP -= $80
+  str $E1=#$FF // Store DP Data
+  and $E1=#$FF // DP &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -744,7 +755,7 @@ SongStart:
   Fail22Loop:
     bra Fail22Loop
   Pass22:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail22
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$16 // Store Handshake Between CPU<->APU
@@ -755,11 +766,12 @@ SongStart:
   /////////////////////////////////////////////////////////////////
   // Setup Flags
   clc // Clear Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  str $E1=#$7F // Store DP Data
-  str $E2=#$7E // Store DP Data
-  sbc $E1=$E2 // DP -= DP
+  str $E1=#$00 // Store DP Data
+  str $E2=#$FF // Store DP Data
+  and $E1=$E2 // DP &= DP
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -776,7 +788,7 @@ SongStart:
   Fail23Loop:
     bra Fail23Loop
   Pass23:
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail23
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$17 // Store Handshake Between CPU<->APU
@@ -785,12 +797,12 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  sec // Set Carry Flag
+  clc // Clear Carry Flag
 
   // Run Test
-  str $E1=#$7F // Store DP Data
-  str $E2=#$80 // Store DP Data
-  sbc $E1=$E2 // DP -= DP
+  str $E1=#$FF // Store DP Data
+  str $E2=#$FF // Store DP Data
+  and $E1=$E2 // DP &= DP
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
@@ -807,7 +819,7 @@ SongStart:
   Fail24Loop:
     bra Fail24Loop
   Pass24:
-    cpx #$C8 // PSW Result Check
+    cpx #$80 // PSW Result Check
     bne Fail24
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$18 // Store Handshake Between CPU<->APU
@@ -817,26 +829,21 @@ SongStart:
 
   /////////////////////////////////////////////////////////////////
   // Setup Flags
-  clc // Clear Carry Flag
+  sec // Set Carry Flag
+  clv // Clear Overflow Flag
 
   // Run Test
-  ldy #$7F // Y = $7F
-  lda #$FF // A = $FF
-  stw $E1  // Store Word Data
-  ldy #$7F // Y = $7F
-  lda #$FF // A = $FF
-  sbw $E1 // YA -= Word
+  str $E1=#$00 // Store DP Data
+  lda #$00 // A = $00
+  and $00E1:7 // Carry Flag &= $00
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
   plx // Pull X Register From Stack (X = Processor Status Flag Data)
   stx.b $E0 // Store PSW Result Data
   stx.b REG_CPUIO1 // Store Handshake Between CPU<->APU
-  stw REG_CPUIO2 // Store Handshake Between CPU<->APU
-  ldx #$00 // X = $00
-  stx.b $E1 // Store Word
-  stx.b $E2
-  cpw $E1 // Result Check
+  sta.b REG_CPUIO2 // Store Handshake Between CPU<->APU
+  cmp #$00 // Result Check
   beq Pass25
   Fail25:
     WDSP(DSP_KON,%00000010) // Play Voice 1 (FAIL)
@@ -844,8 +851,7 @@ SongStart:
   Fail25Loop:
     bra Fail25Loop
   Pass25:
-    ldx.b $E0 // Load PSW Result
-    cpx #$0B // PSW Result Check
+    cpx #$02 // PSW Result Check
     bne Fail25
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$19 // Store Handshake Between CPU<->APU
@@ -857,23 +863,17 @@ SongStart:
   sec // Set Carry Flag
 
   // Run Test
-  ldy #$80 // Y = $80
-  lda #$00 // A = $00
-  stw $E1  // Store Word Data
-  ldy #$7F // Y = $7F
+  str $E1=#$FF // Store DP Data
   lda #$FF // A = $FF
-  sbw $E1 // YA -= Word
+  and $00E1:7 // Carry Flag &= $FF
   php // Push Processor Status Register To Stack
 
   // Check Result & Processor Status Flag Data
   plx // Pull X Register From Stack (X = Processor Status Flag Data)
   stx.b $E0 // Store PSW Result Data
   stx.b REG_CPUIO1 // Store Handshake Between CPU<->APU
-  stw REG_CPUIO2 // Store Handshake Between CPU<->APU
-  ldx #$FF // X = $FE
-  stx.b $E1 // Store Word
-  stx.b $E2
-  cpw $E1 // Result Check
+  sta.b REG_CPUIO2 // Store Handshake Between CPU<->APU
+  cmp #$FF // Result Check
   beq Pass26
   Fail26:
     WDSP(DSP_KON,%00000010) // Play Voice 1 (FAIL)
@@ -881,11 +881,72 @@ SongStart:
   Fail26Loop:
     bra Fail26Loop
   Pass26:
-    ldx.b $E0 // Load PSW Result
-    cpx #$C8 // PSW Result Check
+    cpx #$81 // PSW Result Check
     bne Fail26
     WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
     str REG_CPUIO0=#$1A // Store Handshake Between CPU<->APU
+
+  SPCWaitSHIFTMS(256, 2) // Wait For Shifted MilliSecond Amount (8kHz Timer)
+
+
+  /////////////////////////////////////////////////////////////////
+  // Setup Flags
+  sec // Set Carry Flag
+  clv // Clear Overflow Flag
+
+  // Run Test
+  str $E1=#$FF // Store DP Data
+  lda #$00 // A = $00
+  and !$00E1:7 // Carry Flag &= !$FF
+  php // Push Processor Status Register To Stack
+
+  // Check Result & Processor Status Flag Data
+  plx // Pull X Register From Stack (X = Processor Status Flag Data)
+  stx.b $E0 // Store PSW Result Data
+  stx.b REG_CPUIO1 // Store Handshake Between CPU<->APU
+  sta.b REG_CPUIO2 // Store Handshake Between CPU<->APU
+  cmp #$00 // Result Check
+  beq Pass27
+  Fail27:
+    WDSP(DSP_KON,%00000010) // Play Voice 1 (FAIL)
+    str REG_CPUIO0=#$9B // Store Handshake Between CPU<->APU
+  Fail27Loop:
+    bra Fail25Loop
+  Pass27:
+    cpx #$02 // PSW Result Check
+    bne Fail27
+    WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
+    str REG_CPUIO0=#$1B // Store Handshake Between CPU<->APU
+
+  SPCWaitSHIFTMS(256, 2) // Wait For Shifted MilliSecond Amount (8kHz Timer)
+
+  /////////////////////////////////////////////////////////////////
+  // Setup Flags
+  sec // Set Carry Flag
+
+  // Run Test
+  str $E1=#$00 // Store DP Data
+  lda #$FF // A = $FF
+  and !$00E1:7 // Carry Flag &= !$00
+  php // Push Processor Status Register To Stack
+
+  // Check Result & Processor Status Flag Data
+  plx // Pull X Register From Stack (X = Processor Status Flag Data)
+  stx.b $E0 // Store PSW Result Data
+  stx.b REG_CPUIO1 // Store Handshake Between CPU<->APU
+  sta.b REG_CPUIO2 // Store Handshake Between CPU<->APU
+  cmp #$FF // Result Check
+  beq Pass28
+  Fail28:
+    WDSP(DSP_KON,%00000010) // Play Voice 1 (FAIL)
+    str REG_CPUIO0=#$9C // Store Handshake Between CPU<->APU
+  Fail28Loop:
+    bra Fail26Loop
+  Pass28:
+    cpx #$81 // PSW Result Check
+    bne Fail28
+    WDSP(DSP_KON,%00000001) // Play Voice 0 (PASS)
+    str REG_CPUIO0=#$1C // Store Handshake Between CPU<->APU
 
   SPCWaitSHIFTMS(256, 2) // Wait For Shifted MilliSecond Amount (8kHz Timer)
 
