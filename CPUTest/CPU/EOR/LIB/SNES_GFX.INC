@@ -242,6 +242,48 @@ macro LoadVRAM(SRC, DEST, SIZE, CHAN) {
   sta.w REG_MDMAEN     // $420B: DMA Enable
 }
 
+//========================================================
+// LoadVRAMStride - Load GFX Data To VRAM With DMA Stride
+//========================================================
+//    SRC: 24-Bit Address Of Source Data
+//   DEST: 16-Bit VRAM Destination (WORD Address)
+//   SIZE: Size Of Data (BYTE Size)
+// STRIDE: Dest Offset Stride
+//  COUNT: Number Of DMA Transfers
+//   CHAN: DMA Channel To Transfer Data (0..7)
+macro LoadVRAMStride(SRC, DEST, SIZE, STRIDE, COUNT, CHAN) {
+  lda.b #$80         // Set Increment VRAM Address After Accessing Hi Byte
+  sta.w REG_VMAIN    // $2115: Video Port Control
+
+  lda.b #$01           // Set DMA Mode (Write Word, Increment Source)
+  sta.w REG_DMAP{CHAN} // $43X0: DMA Control
+  lda.b #$18           // Set Destination Register ($2118: VRAM Write)
+  sta.w REG_BBAD{CHAN} // $43X1: DMA Destination
+  ldx.w #{SRC}         // Set Source Offset
+  stx.w REG_A1T{CHAN}L // $43X2: DMA Source
+  lda.b #{SRC} >> 16   // Set Source Bank
+  sta.w REG_A1B{CHAN}  // $43X4: Source Bank
+
+  ldx.w #{DEST} >> 1 // Set VRAM Destination
+  -
+    stx.w REG_VMADDL // $2116: VRAM
+
+    rep #$20 // Set 16-Bit Accumulator
+    txa // A = X
+    clc // Clear Carry Flag
+    adc.w #{STRIDE} >> 1
+    tax // X = A
+    lda.w #{SIZE}        // Set Size In Bytes To DMA Transfer
+    sta.w REG_DAS{CHAN}L // $43X5: DMA Transfer Size/HDMA
+
+    sep #$20 // Set 8-Bit Accumulator
+    lda.b #$01 << {CHAN} // Start DMA Transfer On Channel
+    sta.w REG_MDMAEN     // $420B: DMA Enable
+
+    cpx.w #({DEST} + ({STRIDE} * {COUNT})) >> 1
+    bne -
+}
+
 //======================================
 // UpdateVRAM - Update GFX Data To VRAM
 //======================================
@@ -407,7 +449,7 @@ macro BGScroll16(BGSCR, BGPOS, DIR) {
 //   REG: Source Index Register (x, y)
 // BGPOS: Destination BG Position Register
 //   DIR: Direction To Scroll (de = Decrement, in = Increment)
-macro BGScroll8I(BGPOS, DIR, REG) {
+macro BGScroll8I(REG, BGPOS, DIR) {
   {DIR}{REG}  // Decrement Or Increment BG Scroll Position Low Byte
   t{REG}a     // Swaps 8-Bit Index To 8-Bit A
   sta {BGPOS} // Store A To BG Scroll Position Low Byte
